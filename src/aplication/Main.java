@@ -5,12 +5,13 @@ import controller.MenuController;
 import dataStructures.IGraph;
 import dataStructures.ListGraph;
 import dataStructures.MatrixGraph;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class Main extends Aplication{
+public class Main extends Application{
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -26,7 +27,6 @@ public class Main extends Aplication{
 			MenuController controller = loader.getController();
 			controller.setMain(this);
 			Scene scene = new Scene(root, 850, 720);
-			scene.getStylesheets().add(getClass().getResource("../ui/application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			currentStage.show();
 		} catch(Exception e) {
