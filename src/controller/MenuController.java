@@ -6,8 +6,11 @@ import aplication.Main;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import model.Station;
 
 public class MenuController {
 	
@@ -15,6 +18,13 @@ public class MenuController {
 
 	private ArrayList<String> stationList;
 	private ArrayList<String> implementationList;
+	private int radius = 9;
+	private int radius2 = 2;
+	
+	@FXML
+	private Canvas canvasMarks;
+	
+	private GraphicsContext gc;
 	
     @FXML
     private Button calculateAllRuteInput;
@@ -114,9 +124,31 @@ public class MenuController {
     	stationList.add("Conquistadores");
     }
 
-    public void setMain(Main main) {
-    	this.main = main;     	
-    }
-
+	public void drawPoint(int stationIndex) {
+		Station station = main.getBack().getStation(stationIndex);
+		
+		float x1 = station.getX() + radius;
+		float y1 = station.getY() + radius;
+		
+		gc.fillOval(x1, y1, radius2, radius2);
+	}
+	
+	public void drawEdge(int from, int to) {
+		Station fromStation = main.getBack().getStation(from);
+		Station toStation = main.getBack().getStation(to);
+		
+		float x1 = fromStation.getX() + radius;
+		float y1 = fromStation.getY() + radius;
+		
+		float x2 = toStation.getX() + radius;
+		float y2 = toStation.getY() + radius;
+		
+		gc.strokeLine(x1, y1, x2, y2);
+	}
+	
+	public void setMain(Main main) {
+		this.main = main;
+		gc = canvasMarks.getGraphicsContext2D();
+	}
 }
 

@@ -109,7 +109,7 @@ public class MatrixGraph implements IGraph {
         }
       return s;
     }
-    
+    /*
     public void color(int index) {
     	marked[index]=true;
     	for (int i = 0; i<vertexAmount;i++) {
@@ -117,13 +117,13 @@ public class MatrixGraph implements IGraph {
 				pq.add(new Node(i,ady.get(index).get(i), index));
 			}
 		}
-    }
+    }*/
     
     
 	//Recibe el nodo inicial s
 	@Override
 	public void Dijkstra(int s) {
-		pq.add(new Node(s, 0, s));//se inserta a la cola el nodo Inicial.
+		/*pq.add(new Node(s, 0, s));//se inserta a la cola el nodo Inicial.
 	    distance[s] = 0;
 	    int actual, j, adjacent;
 	    long weight;
@@ -146,10 +146,10 @@ public class MatrixGraph implements IGraph {
 	                }
 	            }
 	        }
-	    }
+	    }*/
 	}
 	    
-
+/*
 	
 	//Retorna en un String la ruta desde s hasta t
 	//Recibe el nodo destino t
@@ -163,5 +163,5 @@ public class MatrixGraph implements IGraph {
 	        r=t+r;
 	    }
 	    return r;
-	}   
+	}   */
 }
