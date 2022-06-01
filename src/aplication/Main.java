@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import model.TransportationSystem;
 
 public class Main extends Application {
-	
 	private TransportationSystem back;
 	
 	public static void main(String[] args) {
@@ -30,8 +29,9 @@ public class Main extends Application {
 			MenuController controller = loader.getController();
 			controller.setMain(this);
 			Scene scene = new Scene(root, 850, 720);
-			scene.getStylesheets().add(getClass().getResource("../ui/application.css").toExternalForm());
 			primaryStage.setScene(scene);
+			currentStage = primaryStage;
+			currentStage.setTitle("Rutas Mío");
 			currentStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
