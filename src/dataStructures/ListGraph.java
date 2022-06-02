@@ -1,4 +1,5 @@
 package dataStructures;
+
 import java.util.*;
 
 import controller.MenuController;
