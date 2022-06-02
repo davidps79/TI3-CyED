@@ -1,38 +1,32 @@
 package dataStructures;
 import java.util.*;
 
-import model.Node;
+import controller.MenuController;
 
 public class ListGraph implements IGraph {
+	private Stack<Integer> stack;
     private boolean isDirected;
     private int vertexAmount;
     private int edgeAmount;
-    private HashMap<Integer, HashMap<Integer, Integer>> ady;
-    private int MAX=Integer.MAX_VALUE;
-    private int distance[];//Estructura auxiliar para llevar las distancias a cada nodo
-    private int prev[]; //Estructura auxiliar para almacenar las rutas
-    private boolean marked[]; //Estructura auxiliar para marcar los nodos visitados
+    private HashMap<Integer, HashMap<Integer, Integer>> adj;
+    private boolean[] color;
     private PriorityQueue<Node> pq;
-
-    //private ArrayList[] ady = new ArrayList[VERTEX_LIMIT];
-
-    public ListGraph(boolean isDirected) {
+    private int distance[];
+	private int prev[]; 
+	private MenuController controller;
+	
+    public ListGraph(boolean isDirected, MenuController controller) {
+        this.adj = new HashMap<>();
         this.isDirected = isDirected;
         this.vertexAmount = 0;
         this.edgeAmount = 0;
-        this.ady = new HashMap<>();
-        this.distance = new int[MAX];
-        this.prev = new int[MAX];
-        marked = new boolean[MAX];
-        pq = new PriorityQueue<Node>();
-        for (int i = 0; i < vertexAmount; i++) {
-			distance[i]=MAX;
-		}
+        this.controller = controller;
     }
     
-    public HashMap<Integer, HashMap<Integer, Integer>> getAdy(){
-    	return ady;
+    public HashMap<Integer, HashMap<Integer, Integer>> getAdj(){
+    	return adj;
     }
+    
     @Override
     public boolean isDirected() {
 		return this.isDirected;
@@ -62,14 +56,14 @@ public class ListGraph implements IGraph {
 
     @Override
     public void addVertex() {
-        ady.put(vertexAmount, new HashMap<>());
+    	adj.put(vertexAmount, new HashMap<>());
         vertexAmount++;
     }
 
     @Override
     public void removeVertex(int vertex) {
-        ady.remove(vertex);
-        for (HashMap<Integer, Integer> h : ady.values()) {
+    	adj.remove(vertex);
+        for (HashMap<Integer, Integer> h : adj.values()) {
             if (h.containsKey(vertex)) h.remove(vertex);
         }
         vertexAmount--;
@@ -77,80 +71,113 @@ public class ListGraph implements IGraph {
 
     @Override
     public void addEdge(int from, int to, int weight) {
-        ady.get(from).put(to, weight);
-        if (isDirected==false) ady.get(to).put(from, weight);
+    	adj.get(from).put(to, weight);
+    	
+        if (isDirected==false) adj.get(to).put(from, weight);
+        
         edgeAmount++;
     }
 
     @Override
     public void removeEdge(int from, int to) {
-        ady.get(from).remove(to);
-        if (isDirected==false) ady.get(to).remove(from);
+    	adj.get(from).remove(to);
+        if (isDirected==false) adj.get(to).remove(from);
         edgeAmount--;
     }
 
     @Override
-    public String printAdy() {
+    public String printAdj() {
     	String s="";
-        for (Integer i : ady.keySet()) {
+        for (Integer i : adj.keySet()) {
             s+=i + " --> ";
-            for (Integer j : ady.get(i).keySet()) {
-                s+=j + "-" + ady.get(i).get(j) + "; ";
+            for (Integer j : adj.get(i).keySet()) {
+                s+=j + "-" + adj.get(i).get(j) + "; ";
             }
             s+="\n";
         }
         return s;
     }
-    
-    public void color(int index) {
-    	marked[index]=true;
-    	for (int i = 0; i<vertexAmount;i++) {
-    		if (marked[i]==false) {
-				pq.add(new Node(i,ady.get(index).get(i), index));
-			}
-		}
+
+	@Override
+    public void prim() {
+		this.stack = new Stack<>();
+        this.pq = new PriorityQueue<>();
+        this.color = new boolean[vertexAmount];
+		primVisit(0);
+
+    	while(!pq.isEmpty()){
+        	int adjacent = pq.poll().getAdjacent();
+	    	if(!color[adjacent]){
+	    		primVisit(adjacent);
+	    	}
+    	}
+    	
+    	while (!stack.isEmpty()) {
+    		controller.addRoute(stack.pop());
+    	}
     }
     
 	@Override
-	public void Dijkstra(int s) {
-		//se inserta a la cola el nodo Inicial.
-	    distance[s] = 0;
-	    color(s);
-	    int actual, j, adjacent, weight;
-	    Node x;
-
-	    while( pq.size() > 0 ) {
-	        actual = pq.peek().getAdjNode();
-	        pq.poll();
-	        if ( !marked[actual] ) {
-	            marked[actual] = true;
-	            for (Integer i : ady.get(actual).keySet()) {
-					adjacent = i;
-	                weight = ady.get(actual).get(i);
-	                if ( !marked[adjacent] ) {
-	                    if (distance[adjacent] > distance[actual] + weight) {
-	                        distance[adjacent] = distance[actual] + weight;
-	                        prev[adjacent] = actual;
-	                        pq.add(new Node(adjacent, distance[adjacent],actual));
-	                    }
-	                }
-				}
-	        }
-	    }
-	}
+    public void primVisit(int u) {
+    	stack.push(u);
+    	controller.drawPoint(u);
+    	color[u] = true;
+    	
+    	for (Integer i : adj.get(u).keySet()) {
+    		if (!color[i]) {
+    			controller.drawEdge(u, i);
+    			pq.add(new Node(i, adj.get(u).get(i)));
+    		}
+    	}
+    }
 	
-	//Retorna en un String la ruta desde s hasta t
-		//Recibe el nodo destino t
-		public String path(int t) {
-		    String r="";
-		    while(prev[t]!=-1){
-		        r="-"+t+r;
-		        t=prev[t];
-		    }
-		    if(t!=-1){
-		        r=t+r;
-		    }
-		    return r;
-		}   
-	   
+	@Override
+	public void dijkstra(int s, int end) {
+        this.pq = new PriorityQueue<>();
+        this.color = new boolean[vertexAmount];
+        this.distance = new int[vertexAmount];
+        this.prev = new int[vertexAmount];
+        for (int i=0; i<vertexAmount; i++) {
+        	prev[i] = -1;
+        	distance[i] = Integer.MAX_VALUE;
+        }
+        
+        pq.add(new Node(s, 0));
+        distance[s] = 0;
+		while(!pq.isEmpty()) {
+			int current = pq.poll().getAdjacent();
+			if (!color[current]) {
+				color[current] = true;
+				for (Integer i : adj.get(current).keySet()) {
+					int weight = adj.get(current).get(i);
+					if (!color[i]) {
+						if (distance[current] + weight < distance[i]) {
+							distance[i] = distance[current] + weight;
+							prev[i] = current;
+							//System.out.println("UPDATE "+ i +":" + distance[i] +"; PREV: " +prev[i]);
+							pq.add(new Node(i, distance[i]));
+						}
+					}
+				}
+			}
+		}
+
+		path(end);
+	}
+
+	public String path(int t) {
+		String r = "";
+		while(prev[t]!=-1){
+			controller.drawPoint(t);
+			controller.drawEdge(t, prev[t]);
+			controller.addRoute(t);
+			t=prev[t];
+		}
+		
+		if(t!=-1){
+			controller.drawPoint(t);
+			controller.addRoute(t);
+		}
+		return r;
+	}
 }

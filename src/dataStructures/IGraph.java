@@ -8,7 +8,8 @@ public interface IGraph {
     public boolean isDirected();
     public int getVertexAmount();
     public int getEdgeAmount();
-    public String printAdy();
-    public void Dijkstra(int s);
-	
+    public String printAdj();
+    public void prim();
+    public void primVisit(int currentVertex);
+	public void dijkstra(int from, int to);
 }

@@ -2,12 +2,10 @@ package aplication;
 
 
 import controller.MenuController;
-import dataStructures.IGraph;
-import dataStructures.ListGraph;
-import dataStructures.MatrixGraph;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import model.TransportationSystem;
@@ -22,14 +20,15 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
-		back = new TransportationSystem();
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("../ui/MenuView.fxml"));
 			BorderPane root = (BorderPane) loader.load();
 			MenuController controller = loader.getController();
+			back = new TransportationSystem(controller);
 			controller.setMain(this);
-			Scene scene = new Scene(root, 850, 720);
+			Scene scene = new Scene(root, 1200, 720);
 			primaryStage.setScene(scene);
+			primaryStage.getIcons().add(new Image("file:files/mioLogo.png"));
 			currentStage = primaryStage;
 			currentStage.setTitle("Rutas Mío");
 			currentStage.show();
@@ -41,5 +40,4 @@ public class Main extends Application {
 	public TransportationSystem getBack() {
 		return back;
 	}
-	
 }
